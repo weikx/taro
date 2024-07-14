@@ -66,9 +66,14 @@ export class TaroEvent {
     const cacheTarget = this.cacheTarget
     if (!cacheTarget) {
       const target = Object.create(this.mpEvent?.target || null)
+      const currentEle = env.document.getElementById(target.dataset?.sid || target.id || null)
+      // Note：优先判断冒泡场景alipay的targetDataset的sid, 不然冒泡场景target属性吐出不对，其余拿取当前绑定id
+      const element = env.document.getElementById(target.targetDataset?.sid || target.dataset?.sid || target.id || null)
 
-      const element = env.document.getElementById(target.id)
-      target.dataset = element !== null ? element.dataset : EMPTY_OBJ
+      target.dataset = {
+        ...(currentEle !== null ? currentEle.dataset : EMPTY_OBJ),
+        ...(element !== null ? element.dataset : EMPTY_OBJ)
+      }
 
       for (const key in this.mpEvent?.detail) {
         target[key] = this.mpEvent!.detail[key]
@@ -89,8 +94,8 @@ export class TaroEvent {
 
       const currentTarget = Object.create(this.mpEvent?.currentTarget || null)
 
-      const element = doc.getElementById(currentTarget.id)
-      const targetElement = doc.getElementById(this.mpEvent?.target?.id || null)
+      const element = doc.getElementById(currentTarget.dataset?.sid || currentTarget.id || null)
+      const targetElement = doc.getElementById(this.mpEvent?.target?.dataset?.sid as string || this.mpEvent?.target?.id as string || null)
 
       if (element === null || (element && element === targetElement)) {
         this.cacheCurrentTarget = this.target

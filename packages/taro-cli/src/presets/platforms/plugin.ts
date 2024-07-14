@@ -1,4 +1,6 @@
+import { fs } from '@tarojs/helper'
 import { getPlatformType } from '@tarojs/shared'
+import * as path from 'path'
 
 import type { IPluginContext } from '@tarojs/service'
 
@@ -13,14 +15,15 @@ export default (ctx: IPluginContext) => {
         _
       } = ctx.runOpts
       const { chalk, PLATFORMS } = ctx.helper
-      const { WEAPP, ALIPAY } = PLATFORMS
+      const { WEAPP, ALIPAY, JD } = PLATFORMS
       const typeMap = {
+        [JD]: '京东',
         [WEAPP]: '微信',
         [ALIPAY]: '支付宝'
       }
       const { plugin, isWatch } = options
-      if (plugin !== WEAPP && plugin !== ALIPAY) {
-        console.log(chalk.red('目前插件编译仅支持 微信/支付宝 小程序！'))
+      if (plugin !== WEAPP && plugin !== ALIPAY && plugin !== JD) {
+        console.log(chalk.red('目前插件编译仅支持 微信/支付宝/京东 小程序！'))
         return
       }
       console.log(chalk.green(`开始编译${typeMap[plugin]}小程序插件`))
@@ -34,7 +37,7 @@ export default (ctx: IPluginContext) => {
               ...config,
               isBuildPlugin: true,
               isWatch,
-              outputRoot: `${config.outputRoot}`,
+              outputRoot: `${config.outputRoot}/plugin`,
               platform
             },
             options: Object.assign({}, options, {
@@ -51,7 +54,8 @@ export default (ctx: IPluginContext) => {
               isBuildPlugin: false,
               isWatch,
               outputRoot: `${config.outputRoot}/miniprogram`,
-              platform
+              platform,
+              output: { ...(config.output || {}), clean: false }
             },
             options: Object.assign({}, options, {
               platform
@@ -61,7 +65,15 @@ export default (ctx: IPluginContext) => {
         })
       }
 
-      buildPlugin(plugin)
+      await buildPlugin(plugin)
+
+      try {
+        const docSrcPath = path.join(process.cwd(), 'src/plugin/doc')
+        const docDestPath = path.join(process.cwd(), 'miniprogram/doc')
+        fs.copy(docSrcPath, docDestPath)
+      } catch (err) {
+        console.error('[@tarojs/cli] build plugin doc failed: ', err)
+      }
     }
   })
 }

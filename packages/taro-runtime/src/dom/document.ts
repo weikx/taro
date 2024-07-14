@@ -1,9 +1,8 @@
-import { controlledComponent, isUndefined } from '@tarojs/shared'
+import { controlledComponent, isUndefined, toCamelCase } from '@tarojs/shared'
 
 import {
   A,
   COMMENT,
-  CUSTOM_WRAPPER,
   DOCUMENT_ELEMENT_NAME,
   ROOT_STR
 } from '../constants'
@@ -16,13 +15,14 @@ import { TaroRootElement } from '../dom/root'
 import { TaroText } from '../dom/text'
 import env from '../env'
 import { AnchorElement } from './anchor-element'
-import { CustomWrapperElement } from './custom-wrapper'
+import { TransferElement } from './transfer'
 
 export class TaroDocument extends TaroElement {
   public documentElement: TaroElement
   public head: TaroElement
   public body: TaroElement
   public createEvent = createEvent
+  cookie?: string
 
   public constructor () {
     super()
@@ -44,8 +44,9 @@ export class TaroDocument extends TaroElement {
       case nodeName === A:
         element = new AnchorElement()
         break
-      case nodeName === CUSTOM_WRAPPER:
-        element = new CustomWrapperElement()
+      case nodeName === 'page-meta':
+      case nodeName === 'navigation-bar':
+        element = new TransferElement(toCamelCase(nodeName))
         break
       default:
         element = new TaroElement()

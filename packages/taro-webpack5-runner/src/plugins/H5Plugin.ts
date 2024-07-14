@@ -1,9 +1,9 @@
 import { FRAMEWORK_MAP, SCRIPT_EXT } from '@tarojs/helper'
-import { VirtualModule } from '@tarojs/webpack5-prebundle/dist/web'
 import { defaults } from 'lodash'
 import path from 'path'
 
 import AppHelper from '../utils/app'
+import { componentConfig } from '../utils/component'
 import TaroComponentsExportsPlugin from './TaroComponentsExportsPlugin'
 
 import type { Func } from '@tarojs/taro/types/compile'
@@ -19,6 +19,8 @@ interface ITaroH5PluginOptions {
   framework: FRAMEWORK_MAP
   frameworkExts: string[]
   runtimePath: string[]
+  alias: Record<string, any>
+  defineConstants: Record<string, any>
   pxTransformConfig: {
     baseFontSize: number
     deviceRatio: any
@@ -57,7 +59,9 @@ export default class TaroH5Plugin {
         unitPrecision: 5,
         targetUnit: 'rem'
       },
-      prebundle: false
+      prebundle: false,
+      alias: {},
+      defineConstants: {},
     })
   }
 
@@ -94,7 +98,7 @@ export default class TaroH5Plugin {
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
       compiler.webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext: LoaderContext<any>, module: NormalModule) => {
-        const { entryFileName, appPath, sourceDir, prebundle, routerConfig, isBuildNativeComp } = this.options
+        const { entryFileName, sourceDir, prebundle, routerConfig, isBuildNativeComp } = this.options
         const { dir, name } = path.parse(module.resource)
         const suffixRgx = /\.(boot|config)/
         if (!suffixRgx.test(name)) return
@@ -110,11 +114,6 @@ export default class TaroH5Plugin {
             ? this.appHelper.compsConfigList.has(pageName)
             : (isApp || this.appHelper.pagesConfigList.has(pageName.split(path.sep).join('/')))
         ) {
-          if (bootstrap) {
-            const bootPath = path.relative(appPath, path.join(sourceDir, `${isMultiRouterMode ? pageName : entryFileName}.boot.js`))
-            VirtualModule.writeModule(bootPath, '/** bootstrap application code */')
-          }
-
           // 把 Map 转换为数组后传递，避免 thread-loader 传递 Map 时变为空对象的问题，fix #13430
           const pagesConfigList: [string, string][] = []
           for (const item of this.appHelper.pagesConfigList.entries()) {
@@ -138,6 +137,8 @@ export default class TaroH5Plugin {
               loaderMeta: this.options.loaderMeta,
               pages: pagesConfigList,
               pxTransformConfig: this.options.pxTransformConfig,
+              alias: this.options.alias,
+              defineConstants: this.options.defineConstants,
               /** building mode */
               bootstrap,
               isBuildNativeComp
@@ -149,7 +150,9 @@ export default class TaroH5Plugin {
       })
     })
 
-    new TaroComponentsExportsPlugin(this.options).apply(compiler)
+    if (!componentConfig.includeAll) {
+      new TaroComponentsExportsPlugin(this.options).apply(compiler)
+    }
   }
 
   run () {

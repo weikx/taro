@@ -11,13 +11,13 @@ import WeappCI from './WeappCI'
 
 import type { IPluginContext } from '@tarojs/service'
 
-const enum EnumAction  {
+const enum EnumAction {
   /** 自动打开预览工具 */
-  'open' = 'open' ,
+  'open' = 'open',
   /** 预览小程序（上传代码，作为“开发版”小程序） */
   'preview' = 'preview',
   /** 上传小程序（上传代码，可设置为“体验版”小程序） */
-  'upload' = 'upload' ,
+  'upload' = 'upload',
 }
 
 interface MinimistArgs {
@@ -34,7 +34,7 @@ interface MinimistArgs {
 export { CIOptions } from './BaseCi'
 export default (ctx: IPluginContext, _pluginOpts: CIOptions | (() => CIOptions)) => {
   const args = minimist<MinimistArgs>(process.argv.slice(2), {
-    boolean: [EnumAction.open,EnumAction.preview, EnumAction.upload],
+    boolean: [EnumAction.open, EnumAction.preview, EnumAction.upload],
     string: ['projectPath'],
     default: {
       projectPath: ''
@@ -63,18 +63,20 @@ export default (ctx: IPluginContext, _pluginOpts: CIOptions | (() => CIOptions))
             password: joi.string().required()
           }),
           /** 阿里小程序上传配置 */
-          alipay:joi.alternatives().try(
+          alipay: joi.alternatives().try(
             joi.object({
               appid: joi.string().required(),
               toolId: joi.string().required(),
               privateKeyPath: joi.string().required(),
-              clientType: joi.string().valid('alipay', 'ampe', 'amap', 'genie', 'alios', 'uc', 'quark', 'health', 'koubei', 'alipayiot', 'cainiao', 'alihealth')
+              clientType: joi.string().valid('alipay', 'ampe', 'amap', 'genie', 'alios', 'uc', 'quark', 'health', 'koubei', 'alipayiot', 'cainiao', 'alihealth'),
+              deleteVersion: joi.string().regex(/^\d+\.\d+\.\d+$/)
             }),
             joi.object({
               appid: joi.string().required(),
               toolId: joi.string().required(),
               privateKey: joi.string().required(),
-              clientType: joi.string().valid('alipay', 'ampe', 'amap', 'genie', 'alios', 'uc', 'quark', 'health', 'koubei', 'alipayiot', 'cainiao', 'alihealth')
+              clientType: joi.string().valid('alipay', 'ampe', 'amap', 'genie', 'alios', 'uc', 'quark', 'health', 'koubei', 'alipayiot', 'cainiao', 'alihealth'),
+              deleteVersion: joi.string().regex(/^\d+\.\d+\.\d+$/)
             }),
 
           ),
@@ -97,6 +99,8 @@ export default (ctx: IPluginContext, _pluginOpts: CIOptions | (() => CIOptions))
           }),
           jd: joi.object({
             privateKey: joi.string().required(),
+            robot: joi.number(),
+            ignores: joi.array().items(joi.string()),
           }),
           version: joi.string(),
           desc: joi.string(),
@@ -207,5 +211,4 @@ export default (ctx: IPluginContext, _pluginOpts: CIOptions | (() => CIOptions))
       }
     })
   })
-
 }

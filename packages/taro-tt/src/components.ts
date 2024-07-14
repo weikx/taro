@@ -9,9 +9,20 @@ export const components = {
   Icon: {
     size: '24'
   },
+  Input: {
+    'adjust-position': _true,
+    'hold-keyboard': _false,
+    'clue-type': '0',
+    bindKeyboardHeightChange: _empty,
+  },
   Button: {
     bindGetPhoneNumber: _empty,
-    'data-channel': _empty
+    'data-channel': _empty,
+    'data-aweme-id': _empty,
+    'group-id': _empty,
+    'data-is-half-page': _empty,
+    bindOpenAwemeUserProfile: _empty,
+    bindJoinGroup: _empty,
   },
   Form: {
     'report-submit-timeout': '0'
@@ -32,7 +43,7 @@ export const components = {
     'enable-play-gesture': _false,
     'show-playback-rate-btn': _false,
     'enable-play-in-background': _false,
-    'signature': _empty,
+    signature: _empty,
     bindProgress: _empty,
     bindSeekComplete: _empty,
     bindAdLoad: _empty,
@@ -60,6 +71,19 @@ export const components = {
     'show-confirm-bar': _true,
     'adjust-position': _true,
     'hold-keyboard': _false
+  },
+  ScrollView: {
+    enhanced: _false,
+    bounces: _true,
+    'refresher-enabled': _false,
+    'refresher-threshold': '55',
+    'refresher-default-style': "'black'",
+    'refresher-background': "'#FFF'",
+    'refresher-triggered': _false,
+    bindRefresherPulling: _empty,
+    bindRefresherRefresh: _empty,
+    bindRefresherRestore: _empty,
+    bindRefresherAbort: _empty,
   },
   Canvas: {
     type: _empty
@@ -135,6 +159,14 @@ export const components = {
     'default-text': _empty,
     'default-avatar': _empty,
     'use-empty-value': _false,
+    bindError: _empty
+  },
+  AwemeUserCard: {
+    'aweme-id': _empty,
+    width: '504',
+    height: '144',
+    fixed: _false,
+    'left-right-padding': _empty,
     bindError: _empty
   }
 }

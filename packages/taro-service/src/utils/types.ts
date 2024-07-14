@@ -1,6 +1,8 @@
+import { AppConfig } from '@tarojs/taro'
+
 import type helper from '@tarojs/helper'
-import type { IProjectConfig } from '@tarojs/taro/types/compile'
-import type { IModifyWebpackChain } from '@tarojs/taro/types/compile/hooks'
+import type { Func, IProjectConfig } from '@tarojs/taro/types/compile'
+import type { IModifyChainData } from '@tarojs/taro/types/compile/hooks'
 import type joi from 'joi'
 import type Webpack from 'webpack'
 import type Chain from 'webpack-chain'
@@ -28,8 +30,6 @@ export interface IPaths {
    */
   nodeModulesPath: string
 }
-
-export type Func = (...args: any[]) => any
 
 export type IPluginsObject = Record<string, Record<any, any> | null>
 
@@ -136,9 +136,13 @@ export declare interface IPluginContext {
    */
   onCompilerMake: (fn: (args: { compilation: Webpack.Compilation, compiler: Webpack.Compiler, plugin: any }) => void) => void
   /**
+   * 编译前，修改 App 配置
+   */
+  modifyAppConfig: (fn: (args: { appConfig: AppConfig }) => void) => void
+  /**
    * 编译中修改 webpack 配置，在这个钩子中，你可以对 webpackChain 作出想要的调整，等同于配置 [`webpackChain`](./config-detail.md#miniwebpackchain)
    */
-  modifyWebpackChain: (fn: (args: { chain: Chain, webpack: typeof Webpack, data?: IModifyWebpackChain }) => void) => void
+  modifyWebpackChain: (fn: (args: { chain: Chain, webpack: typeof Webpack, data?: IModifyChainData }) => void) => void
   /**
    * 修改编译后的结果
    */

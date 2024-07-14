@@ -25,8 +25,8 @@ export default class BuildNativePlugin extends MiniPlugin {
     this.addLoadChunksPlugin(compiler)
   }
 
-  run (compiler: Compiler) {
-    this.appConfig = this.getAppConfig()
+  async run (compiler: Compiler) {
+    this.appConfig = await this.getAppConfig()
     this.getPages()
     this.getPagesConfig()
     this.getConfigFiles(compiler)
@@ -164,7 +164,7 @@ export default class BuildNativePlugin extends MiniPlugin {
           const source = new ConcatSource('')
           const originSource = assets[pageStyle]
           commons.forEach(item => {
-            source.add(`@import ${JSON.stringify(urlToRequest(path.relative(path.dirname(pageStyle), item)))};\n`)
+            source.add(`@import ${JSON.stringify(urlToRequest(path.posix.relative(path.dirname(pageStyle), item)))};\n`)
           })
           source.add(originSource)
           assets[pageStyle] = source

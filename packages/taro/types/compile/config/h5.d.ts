@@ -14,6 +14,8 @@ export interface IH5RouterConfig {
   lazyload?: boolean | ((pagename: string) => boolean)
   renamePagename?: (pagename: string) => string
   forcePath?: string
+  /** 加上这个参数，可以解决返回页面的时候白屏的问题，但是某些不支持 :has() 选择器的浏览器会有问题 */
+  enhanceAnimation?: boolean
 }
 
 export interface IH5Config {
@@ -43,6 +45,9 @@ export interface IH5Config {
 
   /** 预览服务的配置，可以更改端口等参数。具体配置参考 [webpack-dev-server](https://webpack.js.org/configuration/dev-server) */
   devServer?: webpackDevServer.Configuration
+
+  /** 用于控制是否生成 js、css 对应的 sourceMap (默认值：watch 模式下为 true，否则为 false) */
+  enableSourceMap?: boolean
 
   /**  具体配置请参考 [Webpack devtool](https://webpack.js.org/configuration/devtool/#devtool) 配置 (默认值：'cheap-module-eval-source-map')*/
   sourceMapType?:
@@ -93,7 +98,7 @@ export interface IH5Config {
   /** 配置需要额外的经由 Taro 预设的 postcss 编译的模块 */
   esnextModules?: string[]
 
-  /** 用于控制在 H5 端是否使用兼容性组件库，详情请看 [React 兼容性组件库](https://taro-docs.jd.com/docs/next/h5#react-兼容性组件库)。(默认值：false) */
+  /** 用于控制在 H5 端是否使用兼容性组件库，详情请看 [React 兼容性组件库](https://taro-docs.jd.com/docs/h5#react-兼容性组件库)。(默认值：false) */
   useHtmlComponents?: boolean
 
   /** 用于控制在 H5 端是否使用旧版本适配器，旧版本采用全局注册组件，懒加载组件相关依赖；新版本适配器会自动注册相关组件，不再需要引入 @tarojs/components/loader 中的全局 defineCustomElements 方法。(默认值：false) */

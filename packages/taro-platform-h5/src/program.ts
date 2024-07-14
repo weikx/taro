@@ -6,8 +6,8 @@ import { resolveSync } from './utils'
 import type { IPluginContext, TConfig } from '@tarojs/service'
 
 const compLibraryAlias = {
-  'vue': 'vue2',
-  'vue3': 'vue3'
+  vue: 'vue2',
+  vue3: 'vue3'
 }
 
 const PACKAGE_NAME = '@tarojs/plugin-platform-h5'
@@ -48,7 +48,7 @@ export default class H5 extends TaroPlatformWeb {
     if (this.useHtmlComponents && this.aliasFramework === 'react') {
       return require.resolve('./runtime/components')
     } else if (this.useDeprecatedAdapterComponent) {
-      return require.resolve(`@tarojs/components/lib/component-lib/${this.aliasFramework}`)
+      return require.resolve(`@tarojs/components/lib/${this.aliasFramework}/component-lib`)
     } else {
       return require.resolve(`@tarojs/components/lib/${this.aliasFramework}`)
     }
@@ -104,8 +104,8 @@ export default class H5 extends TaroPlatformWeb {
           }
 
           if (!this.useHtmlComponents) {
-            args[0].loaderMeta.extraImportForWeb += `import { defineCustomElementTaroPullToRefresh } from '@tarojs/components/dist/components'\n`
-            args[0].loaderMeta.execBeforeCreateWebApp += `defineCustomElementTaroPullToRefresh()\n`
+            args[0].loaderMeta.extraImportForWeb += `import { defineCustomElementTaroPullToRefreshCore } from '@tarojs/components/dist/components'\n`
+            args[0].loaderMeta.execBeforeCreateWebApp += `defineCustomElementTaroPullToRefreshCore()\n`
           }
 
           switch (this.framework) {
@@ -119,7 +119,7 @@ export default class H5 extends TaroPlatformWeb {
               break
             default:
               if (this.useHtmlComponents) {
-                args[0].loaderMeta.extraImportForWeb += `import { PullDownRefresh } from '@tarojs/components'\n`
+                args[0].loaderMeta.extraImportForWeb += `import '${require.resolve('@tarojs/components-react/dist/index.css')}'\nimport { PullDownRefresh } from '@tarojs/components'\n`
                 args[0].loaderMeta.execBeforeCreateWebApp += `config.PullDownRefresh = PullDownRefresh\n`
               }
           }

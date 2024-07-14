@@ -88,7 +88,8 @@ export default (appPath: string, mode, config: Partial<IBuildConfig>): any => {
     modifyMiniConfigs,
     modifyBuildAssets,
     onCompilerMake,
-    onParseCreateElement
+    onParseCreateElement,
+    skipProcessUsingComponents
   } = config
 
   config.modifyComponentConfig?.(componentConfig, config)
@@ -116,6 +117,7 @@ export default (appPath: string, mode, config: Partial<IBuildConfig>): any => {
   env.FRAMEWORK = JSON.stringify(framework)
   env.TARO_ENV = JSON.stringify(buildAdapter)
   env.TARO_PLATFORM = JSON.stringify(process.env.TARO_PLATFORM || PLATFORM_TYPE.MINI)
+  env.SUPPORT_TARO_POLYFILL = env.SUPPORT_TARO_POLYFILL || '"enabled"'
   const runtimeConstants = getRuntimeConstants(runtime)
   const constantsReplaceList = mergeOption([processEnvOption(env), defineConstants, runtimeConstants])
   const entryRes = getEntry({
@@ -156,6 +158,7 @@ export default (appPath: string, mode, config: Partial<IBuildConfig>): any => {
     pluginConfig: entryRes!.pluginConfig,
     pluginMainEntry: entryRes!.pluginMainEntry,
     isBuildPlugin: Boolean(isBuildPlugin),
+    skipProcessUsingComponents,
     commonChunks: customCommonChunks,
     baseLevel,
     framework,
